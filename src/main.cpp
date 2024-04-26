@@ -151,7 +151,7 @@ void autonomous() {
   chassis.drive_sensor_reset();              // Reset drive sensors to 0
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps
                                              // autonomous consistency
-
+  intake.move_relative(-600, -600);
   ez::as::auton_selector
       .selected_auton_call(); // Calls selected auton from autonomous selector
 }
