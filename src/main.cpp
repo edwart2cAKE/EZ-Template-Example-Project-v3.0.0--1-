@@ -44,14 +44,15 @@ ez::Drive chassis(
     1);
 
 // intake
-pros::MotorGroup intake({17,-16});
+pros::MotorGroup intake({17, -16});
 
 // front wings
 bool front_wings_out = false;
 pros::ADIDigitalOut front_wings('a');
 
-
-
+// intake lifter
+bool intake_lifted = true;
+pros::ADIDigitalOut intake_lifter('h');
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -73,7 +74,7 @@ void initialize() {
   chassis.opcontrol_drive_activebrake_set(
       0); // Sets the active brake kP. We recommend 0.1.
   chassis.opcontrol_curve_default_set(
-      0, 0); // Defaults for curve. If using tank, only the first parameter is
+      2.5, 0); // Defaults for curve. If using tank, only the first parameter is
              // used. (Comment this line out if you have an SD card!)
   default_constants(); // Set the drive to your own constants from autons.cpp!
   chassis.pid_tuner_print_terminal_set(true);
@@ -88,9 +89,8 @@ void initialize() {
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
       Auton("Defensive Side Safe", defensive_side_safe),
-      Auton("Example Turn\n\nTurn 3 times.", turn_example),
-      Auton("Drive and Turn\n\nDrive forward, turn, come back. ",
-            drive_and_turn),
+      Auton("Defensive Side Mid Rush", defensive_side_mid_rush),
+      Auton("Safe 6 ball", safe_6_ball),
       Auton("Drive and Turn\n\nSlow down during drive.",
             wait_until_change_speed),
       Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
@@ -116,8 +116,6 @@ void initialize() {
  */
 
 // toggle front wings function
-
-
 
 void disabled() {
   // . . .
@@ -189,7 +187,7 @@ void opcontrol() {
         chassis.pid_tuner_toggle();
 
       // Trigger the selected autonomous routine
-      if (master.get_digital_new_press(DIGITAL_B)){
+      if (master.get_digital_new_press(DIGITAL_B)) {
         autonomous();
         chassis.drive_brake_set(MOTOR_BRAKE_COAST);
       }
@@ -228,13 +226,17 @@ void opcontrol() {
       intake.move_velocity(0);
     }
 
-
     // front wings
-    if (master.get_digital_new_press(DIGITAL_LEFT)) {
+    if (master.get_digital_new_press(DIGITAL_UP)) {
       front_wings_out = !front_wings_out;
       front_wings.set_value(front_wings_out);
     }
 
+    // intake lifter
+    if (master.get_digital_new_press(DIGITAL_DOWN)) {
+      intake_lifted = !intake_lifted;
+      intake_lifter.set_value(!intake_lifted);
+    }
 
     // master.set_text(1,1,chassis.drive_get())
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!

@@ -16,7 +16,10 @@ void wait_until_change_speed();
 void swing_example();
 void combining_movements();
 void interfered_example();
+
 void defensive_side_safe();
+void defensive_side_mid_rush();
+void safe_6_ball();
 
 void default_constants();
 void tuning_exit_conditions();
